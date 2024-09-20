@@ -11,6 +11,11 @@ tasks:
     cmds:
       - "{{.NENV}}/.bin/prettier {{.COMMAND}}"
 
+  _eslint:
+    internal: true
+    cmds:
+      - "{{.NENV}}/.bin/eslint {{.COMMAND}}"
+
   _with_nvm:
     internal: true
     cmds:
@@ -34,12 +39,20 @@ tasks:
       - task: _prettier
         vars: { COMMAND: "--check ." }
 
+      - echo 'Running eslint checks...'
+      - task: _eslint
+        vars: { COMMAND: "." }
+
   lint-fix:
     desc: Lint fix project
     cmds:
       - echo 'Running prettier fixes...'
       - task: _prettier
         vars: { COMMAND: "--write ." }
+
+      - echo 'Running eslint fixes...'
+      - task: _eslint
+        vars: { COMMAND: "--fix ." }
 
   test:
     desc: Test project
@@ -51,6 +64,27 @@ tasks:
     cmds:
       - echo 'Cleaning node dependencies...'
       - rm -rf {{.NENV}}
+
+  dev-server-start:
+    desc: Start development server
+    cmds:
+      - echo 'Starting development server...'
+      - task: _with_nvm
+        vars: { COMMAND: "npm run dev" }
+
+  dist-build:
+    desc: Build project distribution
+    cmds:
+      - echo 'Building project distribution...'
+      - task: _with_nvm
+        vars: { COMMAND: "npm run build" }
+
+  dist-preview:
+    desc: Preview project distribution
+    cmds:
+      - echo 'Previewing project distribution...'
+      - task: _with_nvm
+        vars: { COMMAND: "npm run preview" }
 
   dependencies-update:
     desc: Update dependencies
